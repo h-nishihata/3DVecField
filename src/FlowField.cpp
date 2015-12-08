@@ -43,7 +43,22 @@ ofVec3f FlowField::getForceAtPosition(ofVec3f pos) {
     if ((pctX < 0 || pctX > 1) || (pctY < 0 || pctY > 1) || (pctZ < 0 || pctZ > 1)){
         return newPos;
     }
-    
+/*
+    ofVec3f bouncePos;
+    if (pctX < 0 || pctX > 1){
+        bouncePos.set(pos.x*-1, pos.y, pos.z);
+        return bouncePos;
+        
+    }else if(pctY < 0 || pctY > 1){
+        bouncePos.set(pos.x, pos.y*-1, pos.z);
+        return bouncePos;
+
+    }else if (pctZ < 0 || pctZ > 1){
+        bouncePos.set(pos.x, pos.y, pos.z*-1);
+        return bouncePos;
+
+    }
+*/
     
     int fieldPosX = (int)(pctX * fieldWidth);
     int fieldPosY = (int)(pctY * fieldHeight);
@@ -92,33 +107,42 @@ void FlowField::addVectorCircle(float x, float y, float z, float vx, float vy, f
     // use min and max to make sure we don't look over the edges
     int startx	= MAX(fieldPosX - fieldRadius, 0);
     int starty	= MAX(fieldPosY - fieldRadius, 0);
+    int startz	= MAX(fieldPosZ - fieldRadius, 0);
     int endx	= MIN(fieldPosX + fieldRadius, fieldWidth);
     int endy	= MIN(fieldPosY + fieldRadius, fieldHeight);
+    int endz	= MIN(fieldPosZ + fieldRadius, fieldDepth);
 
-
-    for (int i = startx; i < endx; i++){
-        for (int j = starty; j < endy; j++){
-            
-            int pos = j * fieldWidth + i;
-            float distance = (float)sqrt((fieldPosX-i)*(fieldPosX-i) +
-                                         (fieldPosY-j)*(fieldPosY-j));
-
-            
-            if (distance < 0.0001) distance = 0.0001;  // since we divide by distance, do some checking here, devide by 0 is BADDDD
-
-            
-            if (distance < fieldRadius){
+    for (int i = startz; i < endz; i++){
+        for (int j = startx; j < endx; j++){
+            for (int k = starty; k < endy; k++){
                 
-                float pct = 1.0f - (distance / fieldRadius);
-                float strongness = strength * pct;
+                int pos = k * fieldWidth + j;
                 
+                ofVec3f posCursor(fieldPosX, fieldPosY, fieldPosZ);
+                ofVec3f posVec(j,k,i);
+                
+                float distance = posCursor.distance(posVec);
+                
+//                float distance = (float)sqrt((fieldPosX-i)*(fieldPosX-i) +
+//                                             (fieldPosY-j)*(fieldPosY-j));
 
-                field[fieldPosZ][pos].x += vx * strongness;
-                field[fieldPosZ][pos].y += vy * strongness;
-                field[fieldPosZ][pos].z += vz * strongness;
+                
+                if (distance < 0.0001) distance = 0.0001;  // since we divide by distance, do some checking here, devide by 0 is BADDDD
+
+                
+                if (distance < fieldRadius){
+                    
+                    float pct = 1.0f - (distance / fieldRadius);
+                    float strongness = strength * pct;
+                    
+
+                    field[i][pos].x += vx * strongness;
+                    field[i][pos].y += vy * strongness;
+                    field[i][pos].z += vz * strongness;
+                    
+                }
                 
             }
-            
         }
     }
 
