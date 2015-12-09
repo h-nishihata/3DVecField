@@ -41,37 +41,54 @@ void ofApp::setup(){
             float b = (float)pixels[j * WIDTH*3 + i * 3+2] / 256.0;
             float brightness = (r + g + b) / 3.0f;
             
-            _pos[j*WIDTH+i] = ofVec3f(i+200, j+200, brightness * 256.0+400);
+//            _pos[j*WIDTH+i] = ofVec3f(i+200, j+200, brightness * 256.0+400);
+            _initPos[j*WIDTH+i] = _pos[j*WIDTH+i] = ofVec3f(i+200, j+200, brightness * 256.0+400);
             points[j*WIDTH+i].set(_pos[j*WIDTH+i]);
-            
+            pct[j*WIDTH+i] = 0;
 //            myColor[j * WIDTH + i].set(1.0, 1.0, 1.0);
         }
     }
     
+    //nodes
+    testNodes[0].setPosition(200, 200, 400);
+    
+    
 
     // camera
     cam.resetTransform();
+    cam.clearParent();
     camPosX = 720;
     camPosY = 450;
-    camPosZ = 0;
+    camPosZ = -300;
     cam.setPosition(camPosX, camPosY, camPosZ);
+    cam.setParent(testControllers[0]);
 
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     
+    for(int i=0; i<kNumControllers; i++) {
+        testControllers[i].setPosition(ofVec3f(sin(ofGetElapsedTimef()*0.1),
+                                               cos(ofGetElapsedTimef()*0.1),
+                                               sin(ofGetElapsedTimef()*0.1)));
+        
+        testControllers[i].setOrientation(ofVec3f(sin(ofGetElapsedTimef()*0.2),
+                                                  cos(ofGetElapsedTimef()*0.2),
+                                                  sin(ofGetElapsedTimef()*0.4)));
+    }
+    
+    
     ofEnableAlphaBlending();
-    
-    
     fbo.begin();
         drawFboTest();
     fbo.end();
     
     
     // camera
-    cam.lookAt(ofVec3f(720,450,500));
-    
+//    cam.lookAt(ofVec3f(720,450,500));
+    cam.lookAt(testNodes[0]);
+    /*
     if (xFlag == false) {
         camPosX --;
         if (cam.getGlobalPosition().x < -100) {
@@ -107,8 +124,9 @@ void ofApp::update(){
             zFlag = false;
         }
     }
+     */
     cam.setPosition(camPosX, camPosY, camPosZ);
-    
+
 
     // particles
     for (unsigned int i=0; i<numParticles; i++) {
@@ -129,7 +147,25 @@ void ofApp::update(){
         _vel[i] += _frc[i];
         _pos[i] += _vel[i];
         
-        points[i].set(_pos[i]);
+        if(!emergeMode){
+            points[i].set(_pos[i]);
+        }
+        
+    }
+    
+    if(emergeMode){
+        
+        for (int i=0; i<WIDTH; i++) {
+            for (int j=0; j<HEIGHT; j++) {
+                
+                pct[j*WIDTH+i] += 0.01;
+                _currentPos[j*WIDTH+i] = interpolateByPct(pct[j*WIDTH+i], j*WIDTH+i);
+                if(pct[j*WIDTH+i] < 1.0){
+                    points[j*WIDTH+i].set(_currentPos[j*WIDTH+i]);
+                }
+                
+            }
+        }
         
     }
 
@@ -141,7 +177,6 @@ void ofApp::drawFboTest(){
     ofHideCursor();
     ofEnableAlphaBlending();
     
-    
     ofClear(255, 255, 255, 0);
     
     cam.begin();
@@ -150,7 +185,22 @@ void ofApp::drawFboTest(){
         p.setVertexData(&points[0], numParticles, GL_DYNAMIC_DRAW);
         p.draw(GL_POINTS, 0, numParticles);
     
+        ofSetColor(255, 0, 0);
+        testNodes[0].setScale(5);
+        testNodes[0].draw();
+    
     cam.end();
+    
+}
+
+//--------------------------------------------------------------
+ofVec3f ofApp::interpolateByPct(float _pct, int _id){
+    
+    ofVec3f pos;
+    pos.x = (1.0 - _pct) * _startPos[_id].x + (_pct) * _initPos[_id].x;
+    pos.y = (1.0 - _pct) * _startPos[_id].y + (_pct) * _initPos[_id].y;
+    pos.z = (1.0 - _pct) * _startPos[_id].z + (_pct) * _initPos[_id].z;
+    return pos;
     
 }
 
@@ -175,6 +225,14 @@ void ofApp::keyPressed(int key){
             points[i].set(_pos[i]);
             
         }
+    }else if(key == 'e'){
+        
+        for (int i=0; i<WIDTH; i++) {
+            for (int j=0; j<HEIGHT; j++) {
+                _startPos[j*WIDTH+i] = _pos[j*WIDTH+i];
+            }
+        }
+        emergeMode = true;
     }
     
 }
