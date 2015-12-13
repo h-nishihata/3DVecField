@@ -40,8 +40,7 @@ public:
     FlowField myField;
     ofNode testNodes[kNumNodes];
     ofNode testControllers[kNumControllers];
-//    ofLight light[kNumLights];
-    
+//    ofLight light[kNumLights];    
     ofCamera cam;
     
     ofVbo p;
@@ -55,7 +54,7 @@ public:
     ofImage img;
     
     float camPosX, camPosY, camPosZ;
-    bool xFlag, yFlag, zFlag;
+    bool zFlag;
 
     float prevMouseX;
     float prevMouseY;
@@ -65,4 +64,13 @@ public:
     ofVec3f _startPos[numParticles];
     ofVec3f _currentPos[numParticles];
     float pct[numParticles];
+    
+    float x,y;
+    float centX = ofRandom(1440);
+    float centY = ofRandom(900);
+    float ang1, ang2;
+    float rad1 = 200;
+    float rad2 = 50;
+    int vel = 3;
+    
 };

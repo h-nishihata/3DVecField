@@ -26,9 +26,9 @@ void ofApp::setup(){
     
  
      for (int i = imgParticles+1; i < numParticles; i++){
-        _pos[i] = ofVec3f(ofRandom(1000),
-                                 ofRandom(1000),
-                                 ofRandom(1000));
+        _pos[i] = ofVec3f(ofRandom(-1000,1000),
+                                 ofRandom(-1000,1000),
+                                 ofRandom(-1000,1000));
         points[i].set(_pos[i]);
 
     }
@@ -41,11 +41,22 @@ void ofApp::setup(){
             float b = (float)pixels[j * WIDTH*3 + i * 3+2] / 256.0;
             float brightness = (r + g + b) / 3.0f;
             
-//            _pos[j*WIDTH+i] = ofVec3f(i+200, j+200, brightness * 256.0+400);
-            _initPos[j*WIDTH+i] = _pos[j*WIDTH+i] = ofVec3f(i+200, j+200, brightness * 256.0+400);
-            points[j*WIDTH+i].set(_pos[j*WIDTH+i]);
-            pct[j*WIDTH+i] = 0;
-//            myColor[j * WIDTH + i].set(1.0, 1.0, 1.0);
+            
+            if (pixels[j * WIDTH*3 + i * 3] < 170 ||
+                pixels[j * WIDTH*3 + i * 3+2] > 100) {
+                
+                _initPos[j*WIDTH+i] = _pos[j*WIDTH+i] = ofVec3f(i+200, j+200, brightness * 256.0+400);
+                
+                points[j*WIDTH+i].set(_pos[j*WIDTH+i]);
+                pct[j*WIDTH+i] = 0;
+//              myColor[j * WIDTH + i].set(1.0, 1.0, 1.0);
+                
+            }else{
+                _pos[j*WIDTH+i] = ofVec3f(ofRandom(1000),
+                                  ofRandom(1000),
+                                  ofRandom(1000));
+                points[j*WIDTH+i].set(_pos[j*WIDTH+i]);
+            }
         }
     }
     
@@ -78,6 +89,29 @@ void ofApp::update(){
                                                   sin(ofGetElapsedTimef()*0.4)));
     }
     
+    ang1 += 3;
+    ang2 += 10;
+    float rx = centX + (rad1 * cos(ofDegToRad(ang1)));
+    float ry = centY + (rad1 * sin(ofDegToRad(ang1)));
+    x = rx + (rad2 * cos(ofDegToRad(ang2)));
+    y = ry + (rad2 * sin(ofDegToRad(ang2)));
+    
+    centX += vel;
+    centY += vel;
+    if(centX < 0 || centX > 1440){vel *= -1;}
+    if(centY < 0 || centY > 900){vel *= -1;}
+    
+    int z = (x+y)/2;
+    float diffx = x - prevMouseX;
+    float diffy = y - prevMouseY;
+    float diffz = z - prevMouseZ;
+    
+    
+    myField.addVectorCircle((float)x, (float)y, (float)z, diffx*0.5, diffy*0.5,  diffz*0.5, 200, 0.3f);
+    
+    prevMouseX = x;
+    prevMouseY = y;
+    prevMouseZ = z;
     
     ofEnableAlphaBlending();
     fbo.begin();
@@ -88,43 +122,19 @@ void ofApp::update(){
     // camera
 //    cam.lookAt(ofVec3f(720,450,500));
     cam.lookAt(testNodes[0]);
-    /*
-    if (xFlag == false) {
-        camPosX --;
-        if (cam.getGlobalPosition().x < -100) {
-            xFlag = true;
-        }
-    }else if (xFlag == true) {
-        camPosX ++;
-        if (cam.getGlobalPosition().x > 1500) {
-            xFlag = false;
-        }
-    }
-    
-    if (yFlag == false) {
-        camPosY --;
-        if (cam.getGlobalPosition().y < -100) {
-            yFlag = true;
-        }
-    }else if (yFlag == true) {
-        camPosY ++;
-        if (cam.getGlobalPosition().y > 1000) {
-            yFlag = false;
-        }
-    }
-    
+   
     if (zFlag == false) {
-        camPosZ --;
-        if (cam.getGlobalPosition().z < -800) {
+        camPosZ -=5;
+        if (cam.getGlobalPosition().z < -1000) {
             zFlag = true;
         }
     }else if (zFlag == true) {
-        camPosZ ++;
-        if (cam.getGlobalPosition().z > 800) {
+        camPosZ +=5;
+        if (cam.getGlobalPosition().z > 1000) {
             zFlag = false;
         }
     }
-     */
+
     cam.setPosition(camPosX, camPosY, camPosZ);
 
 
@@ -158,10 +168,18 @@ void ofApp::update(){
         for (int i=0; i<WIDTH; i++) {
             for (int j=0; j<HEIGHT; j++) {
                 
-                pct[j*WIDTH+i] += 0.01;
-                _currentPos[j*WIDTH+i] = interpolateByPct(pct[j*WIDTH+i], j*WIDTH+i);
-                if(pct[j*WIDTH+i] < 1.0){
-                    points[j*WIDTH+i].set(_currentPos[j*WIDTH+i]);
+                if (pixels[j * WIDTH*3 + i * 3] < 170 ||
+                    pixels[j * WIDTH*3 + i * 3+2] > 100) {
+                
+                    pct[j*WIDTH+i] += 0.01;
+                    _currentPos[j*WIDTH+i] = interpolateByPct(pct[j*WIDTH+i], j*WIDTH+i);
+                    if(pct[j*WIDTH+i] < 2.0){
+                        points[j*WIDTH+i].set(_currentPos[j*WIDTH+i]);
+                    }else{
+                        emergeMode = false;
+                        pct[j*WIDTH+i] = 0;
+                    }
+                    
                 }
                 
             }
@@ -185,9 +203,9 @@ void ofApp::drawFboTest(){
         p.setVertexData(&points[0], numParticles, GL_DYNAMIC_DRAW);
         p.draw(GL_POINTS, 0, numParticles);
     
-        ofSetColor(255, 0, 0);
-        testNodes[0].setScale(5);
-        testNodes[0].draw();
+//        ofSetColor(255, 0, 0);
+//        testNodes[0].setScale(5);
+//        testNodes[0].draw();
     
     cam.end();
     
@@ -197,9 +215,10 @@ void ofApp::drawFboTest(){
 ofVec3f ofApp::interpolateByPct(float _pct, int _id){
     
     ofVec3f pos;
-    pos.x = (1.0 - _pct) * _startPos[_id].x + (_pct) * _initPos[_id].x;
-    pos.y = (1.0 - _pct) * _startPos[_id].y + (_pct) * _initPos[_id].y;
-    pos.z = (1.0 - _pct) * _startPos[_id].z + (_pct) * _initPos[_id].z;
+    float shapedPct = powf(_pct, 0.5);
+    pos.x = (1.0 - shapedPct) * _startPos[_id].x + (shapedPct) * _initPos[_id].x;
+    pos.y = (1.0 - shapedPct) * _startPos[_id].y + (shapedPct) * _initPos[_id].y;
+    pos.z = (1.0 - shapedPct) * _startPos[_id].z + (shapedPct) * _initPos[_id].z;
     return pos;
     
 }
@@ -211,6 +230,8 @@ void ofApp::draw(){
     glPointSize(1.0);
     ofSetColor(255, 255, 255);
     fbo.draw(0,0);
+//    ofSetColor(0,255,0);
+//    ofCircle(centX, centY, rad1);
 
 }
 
@@ -244,7 +265,7 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-    
+    /*
     int z = (x+y)/2;
     
     float diffx = x - prevMouseX;
@@ -256,7 +277,7 @@ void ofApp::mouseMoved(int x, int y ){
     prevMouseX = x;
     prevMouseY = y;
     prevMouseZ = z;
-    
+    */
 }
 
 //--------------------------------------------------------------
