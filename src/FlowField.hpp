@@ -1,5 +1,9 @@
-
 #pragma once
+
+#ifndef FlowField_hpp
+#define FlowField_hpp
+
+#include <stdio.h>
 #include "ofMain.h"
 
 #define width 60
@@ -18,16 +22,17 @@ public:
     
     
     ofVec3f getForceAtPosition( ofVec3f pos );
-
+    
     void addVectorCircle(float x, float y, float z, float vx, float vy, float vz, float radius, float strength);
     void clear();
     
-
+    
     ofVec3f field[depth][width * height];
     
     
     int fieldWidth;
     int fieldHeight;
     int fieldDepth;
-
+    
 };
+#endif /* FlowField_hpp */
