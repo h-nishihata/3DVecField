@@ -45,6 +45,10 @@
 /* Begin PBXFileReference section */
 		733EDAE11C223C41001CC095 /* FlowField.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FlowField.cpp; sourceTree = "<group>"; };
 		733EDAE21C223C41001CC095 /* FlowField.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FlowField.hpp; sourceTree = "<group>"; };
+		73C423C51C6F269A006FDCC1 /* shaderBlurX.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shaderBlurX.frag; sourceTree = "<group>"; };
+		73C423C61C6F269A006FDCC1 /* shaderBlurX.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shaderBlurX.vert; sourceTree = "<group>"; };
+		73C423C71C6F269A006FDCC1 /* shaderBlurY.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shaderBlurY.frag; sourceTree = "<group>"; };
+		73C423C81C6F269A006FDCC1 /* shaderBlurY.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shaderBlurY.vert; sourceTree = "<group>"; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E4B69B5B0A3A1756003C02F2 /* 3dVecFieldDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 3dVecFieldDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4B69E1D0A3A1BDC003C02F2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = SOURCE_ROOT; };
@@ -73,6 +77,18 @@
 			);
 			name = local_addons;
 			sourceTree = "<group>";
+		};
+		73C423C41C6F269A006FDCC1 /* shadersGL2 */ = {
+			isa = PBXGroup;
+			children = (
+				73C423C51C6F269A006FDCC1 /* shaderBlurX.frag */,
+				73C423C61C6F269A006FDCC1 /* shaderBlurX.vert */,
+				73C423C71C6F269A006FDCC1 /* shaderBlurY.frag */,
+				73C423C81C6F269A006FDCC1 /* shaderBlurY.vert */,
+			);
+			name = shadersGL2;
+			path = bin/data/shadersGL2;
+			sourceTree = SOURCE_ROOT;
 		};
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
@@ -110,6 +126,7 @@
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				733EDAE11C223C41001CC095 /* FlowField.cpp */,
 				733EDAE21C223C41001CC095 /* FlowField.hpp */,
+				73C423C41C6F269A006FDCC1 /* shadersGL2 */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
