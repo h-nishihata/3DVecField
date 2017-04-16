@@ -8,7 +8,7 @@ uniform sampler2DRect u_velTex;
 uniform sampler2DRect u_nextPosTex;
 uniform float u_time;
 uniform vec2  u_resolution;
-uniform vec2  u_mousePos;
+uniform vec3  u_mousePos;
 
 void main(void){
     vec2 st = gl_TexCoord[0].st;
@@ -18,7 +18,7 @@ void main(void){
     vec4 nextPos  = texture2DRect(u_nextPosTex,st);
     
     vec3 pos  = position.xyz;
-    vec2 field  = vectorField.xy;
+    vec3 field  = vectorField.xyz;
     vec3 next = nextPos.xyz;
     
     float posMapAlpha = position.w;
@@ -26,35 +26,31 @@ void main(void){
     
     vec2 resolution = u_resolution;
     float time = u_time;    
-    vec2 mousePos = u_mousePos;
+    vec3 mousePos = u_mousePos;
     float fieldRadius = 0.1 * resolution.x;
     
     
     // get force from pos
     float xPos = gl_FragCoord.x;
     float yPos = gl_FragCoord.y;
+    float zPos = gl_FragCoord.z; // clip space (0-1)
 
-    vec2 vel;
-    vec2 _frc;
+    vec3 vel;
+    vec3 _frc;
     
     // add force
-    _frc.x += field.x;
-    _frc.y += field.y;
+    _frc += field;
     
     // add damping force
-    _frc.x -= vel.x*0.9;
-    _frc.y -= vel.y*0.9;
+    _frc -= vel*0.9;
     
     // update
-    vel.x += _frc.x;
-    vel.y += _frc.y;
-    
-    pos.x += vel.x;
-    pos.y += vel.y;
+    vel += _frc;
+    pos += vel;
     
     
     // add vector circle
-    float dist = sqrt((mousePos.x-xPos)*(mousePos.x-xPos) + (mousePos.y-yPos)*(mousePos.y-yPos));
+    float dist = sqrt((mousePos.x-xPos)*(mousePos.x-xPos) + (mousePos.y-yPos)*(mousePos.y-yPos) + (mousePos.z-zPos)*(mousePos.z-zPos));
     
     if (dist < 0.0001) dist = 0.0001;
     
@@ -63,12 +59,14 @@ void main(void){
         float strongness = 0.9 * pct;
         float unit_px = ( mousePos.x - xPos) / dist;
         float unit_py = ( mousePos.y - yPos) / dist;
+        float unit_pz = ( mousePos.z - zPos) / dist;
         field.x += unit_px * strongness;
         field.y += unit_py * strongness;
+        field.z += unit_pz * strongness * 5.0;
     }
 
     
     gl_FragData[0].rgba = vec4(pos, posMapAlpha);
-    gl_FragData[1].rgba = vec4(field, 0.0, velMapAlpha);
+    gl_FragData[1].rgba = vec4(field, velMapAlpha);
     gl_FragData[2].rgba = vec4(next, 0);
 }

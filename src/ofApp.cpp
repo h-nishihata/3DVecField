@@ -130,7 +130,7 @@ void ofApp::update(){
             updatePos.setUniformTexture("u_posTex", pingPong.src->getTexture(0), 0);
             updatePos.setUniformTexture("u_velTex", pingPong.src->getTexture(1), 1);    
             updatePos.setUniform2f("u_resolution", ofGetWidth(), ofGetHeight());
-            updatePos.setUniform2f("u_mousePos", ofGetMouseX(), ofGetMouseY());
+            updatePos.setUniform3f("u_mousePos", ofGetMouseX(), ofGetMouseY(), ofRandom(-10, 10));
             pingPong.src->draw(0, 0);
         
         updatePos.end();
