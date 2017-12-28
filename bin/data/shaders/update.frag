@@ -4,6 +4,7 @@
 #extension GL_ARB_draw_buffers : enable
 
 uniform sampler2DRect u_posTex;
+uniform sampler2DRect u_currColTex;
 uniform sampler2DRect u_velTex;
 uniform sampler2DRect u_nextPosTex;
 uniform float u_time;
@@ -20,12 +21,13 @@ void main(void){
     vec3 pos  = position.xyz;
     vec3 field  = vectorField.xyz;
     vec3 next = nextPos.xyz;
+    vec3 currCol = texture2DRect(u_currColTex, st).xyz;
     
     float posMapAlpha = position.w;
     float velMapAlpha = vectorField.w;
     
     vec2 resolution = u_resolution;
-    float time = u_time;    
+    float time = u_time;
     vec3 mousePos = u_mousePos;
     float fieldRadius = 0.1 * resolution.x;
     
@@ -34,7 +36,7 @@ void main(void){
     float xPos = gl_FragCoord.x;
     float yPos = gl_FragCoord.y;
     float zPos = gl_FragCoord.z; // clip space (0-1)
-
+    
     vec3 vel;
     vec3 _frc;
     
@@ -42,11 +44,11 @@ void main(void){
     _frc += field;
     
     // add damping force
-    _frc -= vel*0.9;
+    _frc -= field*0.9;
     
     // update
     vel += _frc;
-    pos += vel;
+    pos += field * 0.9;
     
     
     // add vector circle
@@ -64,9 +66,11 @@ void main(void){
         field.y += unit_py * strongness;
         field.z += unit_pz * strongness * 5.0;
     }
-
+    
     
     gl_FragData[0].rgba = vec4(pos, posMapAlpha);
-    gl_FragData[1].rgba = vec4(field, velMapAlpha);
-    gl_FragData[2].rgba = vec4(next, 0);
+    gl_FragData[1].rgba = vec4(currCol, 1.0);
+    gl_FragData[2].rgba = vec4(field, velMapAlpha);
+    gl_FragData[3].rgba = vec4(next, 0);
 }
+
