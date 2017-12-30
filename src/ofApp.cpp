@@ -1,10 +1,10 @@
 #include "ofApp.h"
 
 float* currPos;
-float* nextPos;
 float* currCol;
-float* nextCol;
 float* velocity;
+float* nextCol;
+float* nextPos;
 
 
 void ofApp::setInitImage(){
@@ -20,23 +20,23 @@ void ofApp::setInitImage(){
     
     for(int i=0; i<width; i++){
         for(int j=0; j<height; j++){
-            float r = (float)1.0-(pixels[j*width*4+i*4+0] / 256.0);
-            float g = (float)0.6-(pixels[j*width*4+i*4+1] / 256.0);
-            float b = (float)0.3-(pixels[j*width*4+i*4+2] / 256.0);
+            float r = (float)1.0-(pixels[j*width*4+i*4+0] * 0.0039);
+            float g = (float)0.6-(pixels[j*width*4+i*4+1] * 0.0039);
+            float b = (float)0.3-(pixels[j*width*4+i*4+2] * 0.0039);
             float brightness = (r+g+b) * 0.3333;
             
             if ((pixels[j*width*4+i*4+0] > 200) &&
                 (pixels[j*width*4+i*4+2] < 90)){
                 r = g = b = 0;
             }
-            myCoords[j*width+i] = ofVec2f(i,j);
-            myVerts[j*width+i] = ofVec3f(i,j,brightness*256.0);
-            myColor[j*width+i] = ofFloatColor(r,g,b,1.0);
+            myCoords[j*width+i] = ofVec2f(i, j);
+            myVerts[j*width+i] = ofVec3f(i, j, brightness * 256.0);
+            myColor[j*width+i] = ofFloatColor(r, g, b, 1.0);
             
-            currPos[j*width*4+i*4+0] = i-offsetX;
-            currPos[j*width*4+i*4+1] = j-offsetY;
-            currPos[j*width*4+i*4+2] = brightness*256.0;
-            currPos[j*width*4+i*4+3] = 1.0; // map alpha value
+            currPos[j*width*4+i*4+0] = i - offsetX;
+            currPos[j*width*4+i*4+1] = j - offsetY;
+            currPos[j*width*4+i*4+2] = brightness * 256.0;
+            currPos[j*width*4+i*4+3] = 1.0;
             
             currCol[j*width*4+i*4+0] = r;
             currCol[j*width*4+i*4+1] = g;
@@ -46,7 +46,7 @@ void ofApp::setInitImage(){
             velocity[j*width*4+i*4+0] = 0.0;
             velocity[j*width*4+i*4+1] = 0.0;
             velocity[j*width*4+i*4+2] = 0.0;
-            velocity[j*width*4+i*4+3] = ofRandom(1,150);
+            velocity[j*width*4+i*4+3] = 1.0;
         }
     }
     
@@ -75,6 +75,7 @@ void ofApp::setNextImage(){
     img.load(str);
     pixels = img.getPixels();
     
+    
     nextPos = new float[width*height*4];
     nextCol = new float[width*height*4];
     
@@ -83,9 +84,9 @@ void ofApp::setNextImage(){
     
     for(int i=0; i<width; i++){
         for(int j=0; j<height; j++){
-            float r = (float)1.0-(pixels[j*width*4+i*4+0] / 256.0);
-            float g = (float)0.6-(pixels[j*width*4+i*4+1] / 256.0);
-            float b = (float)0.3-(pixels[j*width*4+i*4+2] / 256.0);
+            float r = (float)1.0-(pixels[j*width*4+i*4+0] * 0.0039);
+            float g = (float)0.6-(pixels[j*width*4+i*4+1] * 0.0039);
+            float b = (float)0.3-(pixels[j*width*4+i*4+2] * 0.0039);
             float brightness = (r+g+b) * 0.3333;
             
             if ((pixels[j*width*4+i*4+0] > 200) &&
@@ -94,7 +95,7 @@ void ofApp::setNextImage(){
             }
             nextPos[j*width*4+i*4+0] = i-offsetX;
             nextPos[j*width*4+i*4+1] = j-offsetY;
-            nextPos[j*width*4+i*4+2] = brightness*256.0;
+            nextPos[j*width*4+i*4+2] = brightness * 256.0;
             nextPos[j*width*4+i*4+3] = 1.0;
             
             nextCol[j*width*4+i*4+0] = r;
@@ -141,74 +142,70 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    
     // morphing
     float time = ofGetElapsedTimef();
     if(((int)time % lifeTime == 0) && ((int)time != 0)){
         startCount = ofGetElapsedTimef();
     }
-    
+
     if((time - startCount <= morphingDuration) && ((int)time >= morphingDuration)){
         isMorphing = true;
     }else{
         isMorphing = false;
     }
-    /*
-    ofxOscMessage pulse;
-    static int pulseLength;
+    
+    // ofxOscMessage pulse;
+    // static int pulseLength;
     if(isMorphing){
         if(!imgUpdated){
             imgID++;
             setNextImage();
             imgUpdated = true;
-            pulse.setAddress("/overdose");
-            pulse.addIntArg(1);
-            sender.sendMessage(pulse, false);
+//            pulse.setAddress("/overdose");
+//            pulse.addIntArg(1);
+//            sender.sendMessage(pulse, false);
         }
-        
-        if(pulseLength < 5){
-            pulseLength ++;
-        }else{
-            pulse.setAddress("/overdose");
-            pulse.addIntArg(0);
-            sender.sendMessage(pulse, false);
-        }
+
+//        if(pulseLength < 5){
+//            pulseLength ++;
+//        }else{
+//            pulse.setAddress("/overdose");
+//            pulse.addIntArg(0);
+//            sender.sendMessage(pulse, false);
+//        }
         overdose = 1;
     }else{
         imgUpdated = false;
-        pulseLength = 0;
+//        pulseLength = 0;
         overdose = 0;
     }
-    */
+    
     // nodes
     float freq = 0.2;
     for (int i=0; i<numNodes; i++) {
-        float amp = i*200;
-        node[i].setPosition(ofVec3f(sin(time * freq)*amp, cos(time * freq)*amp, sin(time * freq)*amp));
+        float amp = i * 200;
+        node[i].setPosition(ofVec3f(sin(time * freq) * amp, cos(time * freq) * amp, sin(time * freq) * amp));
         freq *= 0.5;
     }
     
-    
     // dispatch to update shader
     pingPong.dst->begin();
-    
     pingPong.dst->activateAllDrawBuffers();
     ofClear(0);
-    
+
     updatePos.begin();
-    
     updatePos.setUniformTexture("u_currPosTex", pingPong.src->getTexture(0), 0);
     updatePos.setUniformTexture("u_currColTex", pingPong.src->getTexture(1), 1);
     updatePos.setUniformTexture("u_velTex", pingPong.src->getTexture(2), 2);
-//    updatePos.setUniformTexture("u_nextPosTex", pingPong.src->getTexture(3), 3);
-//    updatePos.setUniformTexture("u_nextColTex", pingPong.src->getTexture(4), 4);
+    updatePos.setUniformTexture("u_nextPosTex", pingPong.src->getTexture(3), 3);
+    updatePos.setUniformTexture("u_nextColTex", pingPong.src->getTexture(4), 4);
     updatePos.setUniform1f("u_time", time);
     updatePos.setUniform2f("u_resolution", ofGetWidth(), ofGetHeight());
-    updatePos.setUniform3f("u_nodePos", node[0].getPosition());
+//    updatePos.setUniform3f("u_nodePos", node[1].getPosition());
     updatePos.setUniform3f("u_mousePos", ofGetMouseX(), ofGetMouseY(), ofRandom(-10, 10));
-//    updatePos.setUniform1i("u_overdose", overdose);
-    
+    updatePos.setUniform1i("u_overdose", overdose);
     pingPong.src->draw(0, 0);
-    
     updatePos.end();
     
     pingPong.dst->end();
@@ -278,7 +275,7 @@ void ofApp::draw(){
     ofPushStyle();
     ofEnableBlendMode(OF_BLENDMODE_ADD);
     ofEnablePointSprites();
-    
+
     cam.lookAt(node[0]);
     cam.begin();
     if(debugMode){
@@ -291,17 +288,17 @@ void ofApp::draw(){
             node[i].draw();
         }
     }
-    
+
     render.begin();
-    
+
     render.setUniformTexture("u_currPosTex", pingPong.src->getTexture(0), 0);
     render.setUniformTexture("u_currColTex", pingPong.src->getTexture(1), 1);
-    
+
     vbo.draw(GL_POINTS, 0, numParticles);
-    
+
     render.end();
     cam.end();
-    
+
     ofDisablePointSprites();
     ofPopStyle();
     
@@ -314,11 +311,10 @@ void ofApp::draw(){
         ofDrawBitmapStringHighlight("Current Color", 288, 14);
         pingPong.dst->getTexture(2).draw(576, 0, 288, 288);
         ofDrawBitmapStringHighlight("Vector Field", 576, 14);
-//        pingPong.dst->getTexture(3).draw(864, 0, 288, 288);
-//        ofDrawBitmapStringHighlight("Next Position", 864, 14);
-//        pingPong.dst->getTexture(4).draw(1152, 0, 288, 288);
-//        ofDrawBitmapStringHighlight("Next Color", 1152, 14);
-        
+        pingPong.dst->getTexture(3).draw(864, 0, 288, 288);
+        ofDrawBitmapStringHighlight("Next Position", 864, 14);
+        pingPong.dst->getTexture(4).draw(1152, 0, 288, 288);
+        ofDrawBitmapStringHighlight("Next Color", 1152, 14);
         ofPopStyle();
         ofDrawBitmapStringHighlight("FPS : " + ofToString(ofGetFrameRate()), 0, ofGetHeight() - 2);
     }
@@ -345,11 +341,7 @@ void ofApp::mouseMoved(int x, int y){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-//    mousePos = ofVec2f(x/1440, y/900);
-//    diff = ofVec2f((x-prevMouseX)*0.3, (y-prevMouseY)*0.3);
     
-//    prevMouseX = x;
-//    prevMouseY = y;
 }
 
 //--------------------------------------------------------------
@@ -386,4 +378,3 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){
     
 }
-

@@ -51,16 +51,14 @@ public:
     ofVec2f myCoords[numParticles];
     ofFloatColor myColor[numParticles];
     
-    int lifeTime = 157;
+    int lifeTime = 120;
     int overdose;
     float startCount;
     float morphingDuration = 5.0;
     bool isMorphing;
     bool imgUpdated;
     
-    bool debugMode;
-    ofVec2f mousePos, diff;
 //    ofxOscSender sender;
     bool oscSent0, oscSent1;
+    bool debugMode;
 };
-
