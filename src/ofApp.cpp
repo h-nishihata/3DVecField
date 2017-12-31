@@ -135,7 +135,7 @@ void ofApp::setup(){
     pingPong.allocate(width, height, GL_RGBA32F, 5);
     setInitImage();
     
-    debugMode = false;
+    debugMode = true;
     
 //    sender.setup(HOST, PORT);
 }
@@ -202,8 +202,6 @@ void ofApp::update(){
     updatePos.setUniformTexture("u_nextColTex", pingPong.src->getTexture(4), 4);
     updatePos.setUniform1f("u_time", time);
     updatePos.setUniform2f("u_resolution", ofGetWidth(), ofGetHeight());
-//    updatePos.setUniform3f("u_nodePos", node[1].getPosition());
-    updatePos.setUniform3f("u_mousePos", ofGetMouseX(), ofGetMouseY(), ofRandom(-10, 10));
     updatePos.setUniform1i("u_overdose", overdose);
     pingPong.src->draw(0, 0);
     updatePos.end();

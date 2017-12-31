@@ -8,17 +8,10 @@ uniform sampler2DRect u_currColTex;
 uniform sampler2DRect u_velTex;
 uniform sampler2DRect u_nextPosTex;
 uniform sampler2DRect u_nextColTex;
-uniform vec2  u_resolution;
-uniform vec3  u_mousePos;
-uniform int   u_overdose;
 
-float ang1, ang2;
-float rad1 = 200;
-float rad2 = 50;
-float prevPointX, prevPointY, prevPointZ;
-float centX, centY;
-float x, y, z;
-float vel = 3;
+uniform vec2  u_resolution;
+uniform float  u_time;
+uniform int   u_overdose;
 
 void main(void){
     vec2 st = gl_TexCoord[0].st;
@@ -32,20 +25,19 @@ void main(void){
     float posMapAlpha = texture2DRect(u_currPosTex,st).w;
     float velMapAlpha = texture2DRect(u_currPosTex,st).w;
     
-    vec3 mousePos = u_mousePos;
     vec2 resolution = u_resolution;
-    float fieldRadius = 0.1 * resolution.x;
-    
+    float fieldRadius = 0.05 * resolution.x;
+    float time = u_time;
+    vec3 agentPos;
     int overdose = u_overdose;
-//    float lerpSpeed = 0.01;
-    float centX = resolution.x * 0.5;
-    float centY = resolution.y * 0.5;
-
+    float lerpSpeed = 0.01;
     
-    // get force from pos
-    float xPos = gl_FragCoord.x;
-    float yPos = gl_FragCoord.y;
-    float zPos = gl_FragCoord.z; // clip space (0-1)
+    // stirring agent
+    float centX = 320;
+    float centY = 320;
+    float ang1, ang2;
+    float rad1 = 120;
+    float rad2 = 60;
     
 
     if(overdose == 0){
@@ -81,45 +73,49 @@ void main(void){
     }
     
     
+    // stirring agent
+//    centX += velX;
+//    centY += velY;
+    
+    ang1 += time * 5;
+    ang2 += time * 10;
+    float rx = centX + (rad1 * cos(ang1));
+    float ry = centY + (rad1 * sin(ang1));
+    agentPos.x = rx + (rad2 * cos(ang2));
+    agentPos.y = ry + (rad2 * sin(ang2));
+//    z = 320 * (x/320) - 320;   // -640 < z < 640
+
+    
+//    if(centX < 0+rad1 || centX > 320-rad1){
+//        velX *= -1;
+//    }
+//    if(centY < 0+rad1 || centY > 320-rad1){
+//        velY * -1;
+//    }
+    
+    
+    // get force from pos
+    float xPos = gl_FragCoord.x;
+    float yPos = gl_FragCoord.y;
+    float zPos = gl_FragCoord.z; // clip space (0-1)
+    
     // add vector circle
-    float dist = sqrt((mousePos.x-xPos)*(mousePos.x-xPos) + (mousePos.y-yPos)*(mousePos.y-yPos) + (mousePos.z-zPos)*(mousePos.z-zPos));
+    float dist = sqrt((agentPos.x-xPos)*(agentPos.x-xPos) + (agentPos.y-yPos)*(agentPos.y-yPos) + (0-zPos)*(0-zPos));
     
-    if (dist < 0.0001) dist = 0.0001;
-    
+    if (dist < 0.0001){
+        dist = 0.0001;
+    }
     if (dist < fieldRadius){
         float pct = 1.0f - (dist / fieldRadius);
         float strongness = 0.9 * pct;
-        float unit_px = ( mousePos.x - xPos) / dist;
-        float unit_py = ( mousePos.y - yPos) / dist;
-        float unit_pz = ( mousePos.z - zPos) / dist;
+        float unit_px = ( agentPos.x - xPos) / dist;
+        float unit_py = ( agentPos.y - yPos) / dist;
+        float unit_pz = ( agentPos.z - zPos) / dist;
         field.x += unit_px * strongness;
         field.y += unit_py * strongness;
         field.z += unit_pz * strongness * 5.0;
     }
     
-    /* stirring agent
-    ang1 += 3;
-    ang2 += 10;
-    float rx = centX + (rad1 * cos(ang1*0.017));
-    float ry = centY + (rad1 * sin(ang1*0.017));
-    x = rx + (rad2 * cos(ang2*0.017));
-    y = ry + (rad2 * sin(ang2*0.017));
-    z = 900 * (x/1440) - 450;   // -450 < z < 450
-    
-    mousePos = vec3(x, y, z);
-    
-//    float diffx = x - prevPointX;
-//    float diffy = y - prevPointY;
-//    float diffz = z - prevPointZ;
-//    prevPointX = x;
-//    prevPointY = y;
-//    prevPointZ = z;
-
-    centX += vel;
-    centY += vel;
-//    if(centX < 0+rad1 || centX > 1440-rad1){vel *= -1;}
-//    if(centY < 0+rad1 || centY > 900-rad1){vel *= -1;}
-    */
     
     gl_FragData[0].rgba = vec4(currPos, posMapAlpha);
     gl_FragData[1].rgba = vec4(currCol, 1.0);
