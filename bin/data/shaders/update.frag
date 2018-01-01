@@ -40,20 +40,14 @@ void main(void){
     float rad2 = 60;
     
 
-    if(overdose == 0){
-        // normal mdde
-        currPos += field*0.9;
-        
-    }else if(overdose == 1){
-        
+    if(overdose == 1){
         field = vec3(0, 0, 0);
-        currPos = nextPos;
-        currCol = nextCol;
-        /*
+        
         // morphing mode
         if(abs(nextPos.x - currPos.x)>0.1){ field.x = (nextPos.x - currPos.x)*0.05; }else{ field.x=0; }
         if(abs(nextPos.y - currPos.y)>0.1){ field.y = (nextPos.y - currPos.y)*0.05; }else{ field.y=0; }
         if(abs(nextPos.z - currPos.z)>0.1){ field.z = (nextPos.z - currPos.z)*0.05; }else{ field.z=0; }
+        
         // lerp colors
         if(currCol.r < nextCol.r){
             currCol.r += lerpSpeed;
@@ -69,8 +63,9 @@ void main(void){
             currCol.b += lerpSpeed;
         }else{
             currCol.b -= lerpSpeed;
-        }*/
+        }
     }
+    currPos += field*0.9;
     
     
     // stirring agent
@@ -84,7 +79,6 @@ void main(void){
     agentPos.x = rx + (rad2 * cos(ang2));
     agentPos.y = ry + (rad2 * sin(ang2));
 //    z = 320 * (x/320) - 320;   // -640 < z < 640
-
     
 //    if(centX < 0+rad1 || centX > 320-rad1){
 //        velX *= -1;
