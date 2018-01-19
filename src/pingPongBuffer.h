@@ -1,7 +1,7 @@
 #ifndef GPUParticles_pingPongBuffer_h
 #define GPUParticles_pingPongBuffer_h
 
-#define numFBOs 3
+#define numFBOs 5
 // examples/gl/gpuParticleSystemExampleを元に、複数バッファ書き出しに対応
 
 struct pingPongBuffer{

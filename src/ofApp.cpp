@@ -117,10 +117,9 @@ void ofApp::setup(){
     ofSetFrameRate(0);
     
     ofBackground(0);
-    ofDisableAlphaBlending();
     
     cam.setupPerspective(); // set the image to the right direction
-    cam.setPosition(0, 0, 512);
+    cam.setPosition(0, 0, 640);
     cam.setParent(node[1]);
     
     for (int i=0; i<numNodes; i++) {
@@ -133,10 +132,16 @@ void ofApp::setup(){
     updatePos.load("", "shaders/update.frag");
     
     pingPong.allocate(width, height, GL_RGBA32F, 5);
+    
+    // Allocate the final
+    renderFBO.allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGBA32F);
+    renderFBO.begin();
+    ofClear(0, 0, 0, 255);
+    renderFBO.end();
+    
     setInitImage();
     
-    debugMode = true;
-    
+//    debugMode = true;
 //    sender.setup(HOST, PORT);
 }
 
@@ -209,6 +214,33 @@ void ofApp::update(){
     pingPong.dst->end();
     pingPong.swap();
     
+    ofEnableAlphaBlending();
+    renderFBO.begin();
+//    ofClear(0, 0, 0, 20);
+    ofSetColor(0, 0, 0, 20);
+    ofFill();
+    ofDrawRectangle(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
+    
+    render.begin();
+    
+    cam.lookAt(node[0]);
+    cam.begin();
+    
+    render.setUniformTexture("u_currPosTex", pingPong.dst->getTexture(0), 0);
+    render.setUniformTexture("u_currColTex", pingPong.dst->getTexture(1), 1);
+    
+    ofPushStyle();
+    ofEnableBlendMode(OF_BLENDMODE_ADD);
+    vbo.draw(GL_POINTS, 0, numParticles);
+    ofDisableBlendMode();
+    
+    glEnd();
+    cam.end();
+    
+    render.end();
+    renderFBO.end();
+    ofPopStyle();
+    
     /* osc
     // ID of messages is correspondent to that of variables of MAX multislider
     if((int)time % 7 == 0){
@@ -269,14 +301,11 @@ float ofApp::easeInOutQuad (float current, float init, float destination, float 
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofHideCursor();
+    ofBackground(0);
     
-    ofPushStyle();
-    ofEnableBlendMode(OF_BLENDMODE_ADD);
-    ofEnablePointSprites();
+    ofSetColor(255,255,255);
 
-    cam.lookAt(node[0]);
-    cam.begin();
-    if(debugMode){
+/*    if(debugMode){
         for (int i=0; i<numNodes; i++) {
             if(i==0){
                 ofSetColor(255, 0, 0);
@@ -286,19 +315,9 @@ void ofApp::draw(){
             node[i].draw();
         }
     }
+ */
 
-    render.begin();
-
-    render.setUniformTexture("u_currPosTex", pingPong.src->getTexture(0), 0);
-    render.setUniformTexture("u_currColTex", pingPong.src->getTexture(1), 1);
-
-    vbo.draw(GL_POINTS, 0, numParticles);
-
-    render.end();
-    cam.end();
-
-    ofDisablePointSprites();
-    ofPopStyle();
+    renderFBO.draw(0, 0);
     
     if(debugMode){
         ofPushStyle();

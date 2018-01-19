@@ -35,6 +35,8 @@ public:
     ofShader render, updatePos;
     pingPongBuffer pingPong;
     
+    ofFbo renderFBO;
+    
     ofNode node[numNodes];
     ofCamera cam;
     
@@ -51,7 +53,7 @@ public:
     ofVec2f myCoords[numParticles];
     ofFloatColor myColor[numParticles];
     
-    int lifeTime = 120;
+    int lifeTime = 30;
     int overdose;
     float startCount;
     float morphingDuration = 5.0;

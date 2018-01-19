@@ -37,7 +37,7 @@ void main(void){
     float centY = 320;
     float ang1, ang2;
     float rad1 = 120;
-    float rad2 = 60;
+    float rad2 = 80;
     
 
     if(overdose == 1){
@@ -72,8 +72,8 @@ void main(void){
 //    centX += velX;
 //    centY += velY;
     
-    ang1 += time * 5;
-    ang2 += time * 10;
+    ang1 += sin(time * 0.1) * 100;
+    ang2 += sin(time * 0.2) * 80;
     float rx = centX + (rad1 * cos(ang1));
     float ry = centY + (rad1 * sin(ang1));
     agentPos.x = rx + (rad2 * cos(ang2));
@@ -101,7 +101,7 @@ void main(void){
     }
     if (dist < fieldRadius){
         float pct = 1.0f - (dist / fieldRadius);
-        float strongness = 0.9 * pct;
+        float strongness = 0.5 * pct;
         float unit_px = ( agentPos.x - xPos) / dist;
         float unit_py = ( agentPos.y - yPos) / dist;
         float unit_pz = ( agentPos.z - zPos) / dist;
