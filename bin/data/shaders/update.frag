@@ -33,11 +33,11 @@ void main(void){
     float lerpSpeed = 0.01;
     
     // stirring agent
-    float centX = 320;
-    float centY = 320;
+    float centX = 540;
+    float centY = 540;
     float ang1, ang2;
-    float rad1 = 120;
-    float rad2 = 80;
+    float rad1 = 240;
+    float rad2 = 160;
     
 
     if(overdose == 1){
@@ -72,8 +72,8 @@ void main(void){
 //    centX += velX;
 //    centY += velY;
     
-    ang1 += sin(time * 0.1) * 100;
-    ang2 += sin(time * 0.2) * 80;
+    ang1 += sin(time * 0.1) * 30;
+    ang2 += sin(time * 0.2) * 20;
     float rx = centX + (rad1 * cos(ang1));
     float ry = centY + (rad1 * sin(ang1));
     agentPos.x = rx + (rad2 * cos(ang2));

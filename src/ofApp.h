@@ -43,8 +43,8 @@ public:
     ofImage img;
     int imgID;
     
-    static const int width = 640;
-    static const int height = 640;
+    static const int width = 1080;
+    static const int height = 1080;
     static const int numParticles = width * height;
     
     ofVbo vbo;

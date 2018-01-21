@@ -26,7 +26,7 @@ void ofApp::setInitImage(){
             float brightness = (r+g+b) * 0.3333;
             
             if ((pixels[j*width*4+i*4+0] > 200) &&
-                (pixels[j*width*4+i*4+2] < 90)){
+                (pixels[j*width*4+i*4+1] > 90)){
                 r = g = b = 0;
             }
             myCoords[j*width+i] = ofVec2f(i, j);
@@ -90,7 +90,7 @@ void ofApp::setNextImage(){
             float brightness = (r+g+b) * 0.3333;
             
             if ((pixels[j*width*4+i*4+0] > 200) &&
-                (pixels[j*width*4+i*4+2] < 90)){
+                (pixels[j*width*4+i*4+1] > 90)){
                 r = g = b = 0;
             }
             nextPos[j*width*4+i*4+0] = i-offsetX;
@@ -119,7 +119,7 @@ void ofApp::setup(){
     ofBackground(0);
     
     cam.setupPerspective(); // set the image to the right direction
-    cam.setPosition(0, 0, 640);
+    cam.setPosition(0, 0, 720);
     cam.setParent(node[1]);
     
     for (int i=0; i<numNodes; i++) {
@@ -141,7 +141,6 @@ void ofApp::setup(){
     
     setInitImage();
     
-//    debugMode = true;
 //    sender.setup(HOST, PORT);
 }
 
@@ -303,7 +302,7 @@ void ofApp::draw(){
     ofHideCursor();
     ofBackground(0);
     
-    ofSetColor(255,255,255);
+//    ofSetColor(205,155,155);
 
 /*    if(debugMode){
         for (int i=0; i<numNodes; i++) {

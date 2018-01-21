@@ -29,7 +29,7 @@ void main() {
     gl_Position = gl_ModelViewProjectionMatrix * vec4(pos, 1.0);
     
     // gaussian blur
-    float width = 7.2;
+    float width = 5.2;
     
     vec2 texcoordM  = st;
     vec2 texcoordB0 = st - width;
@@ -47,7 +47,7 @@ void main() {
     vec4 sampleB2 = texture2DRect(u_currColTex, texcoordB2);
     vec4 sampleF2 = texture2DRect(u_currColTex, texcoordF2);
   
-    gl_FrontColor = 0.1752 * sampleM + 0.1658 * (sampleB0 + sampleF0) + 0.1403 * (sampleB1 + sampleF1) + 0.1063 * (sampleB2 + sampleF2);
+    gl_FrontColor = 0.0584 * sampleM + 0.0552 * (sampleB0 + sampleF0) + 0.0467 * (sampleB1 + sampleF1) + 0.0354 * (sampleB2 + sampleF2);
     
     
     /*
