@@ -10,6 +10,7 @@ uniform sampler2DRect u_nextPosTex;
 uniform sampler2DRect u_nextColTex;
 
 uniform vec2  u_resolution;
+uniform float  u_pixelR, u_pixelG, u_pixelB, u_pixelT;
 uniform float  u_time;
 uniform int   u_overdose;
 
@@ -27,9 +28,7 @@ void main(void){
     
     vec2 resolution = u_resolution;
     float fieldRadius = 0.05 * resolution.x;
-    float time = u_time;
     vec3 agentPos;
-    int overdose = u_overdose;
     float lerpSpeed = 0.01;
     
     // stirring agent
@@ -39,11 +38,11 @@ void main(void){
     float rad1 = 240;
     float rad2 = 160;
     
-
-    if(overdose == 1){
+    
+    // morphing mode
+    if(u_overdose == 1){
         field = vec3(0, 0, 0);
         
-        // morphing mode
         if(abs(nextPos.x - currPos.x)>0.1){ field.x = (nextPos.x - currPos.x)*0.05; }else{ field.x=0; }
         if(abs(nextPos.y - currPos.y)>0.1){ field.y = (nextPos.y - currPos.y)*0.05; }else{ field.y=0; }
         if(abs(nextPos.z - currPos.z)>0.1){ field.z = (nextPos.z - currPos.z)*0.05; }else{ field.z=0; }
@@ -69,24 +68,12 @@ void main(void){
     
     
     // stirring agent
-//    centX += velX;
-//    centY += velY;
-    
-    ang1 += sin(time * 0.1) * 30;
-    ang2 += sin(time * 0.2) * 20;
+    ang1 += sin(u_time * 0.1) * 30;
+    ang2 += sin(u_time * 0.2) * 20;
     float rx = centX + (rad1 * cos(ang1));
     float ry = centY + (rad1 * sin(ang1));
     agentPos.x = rx + (rad2 * cos(ang2));
     agentPos.y = ry + (rad2 * sin(ang2));
-//    z = 320 * (x/320) - 320;   // -640 < z < 640
-    
-//    if(centX < 0+rad1 || centX > 320-rad1){
-//        velX *= -1;
-//    }
-//    if(centY < 0+rad1 || centY > 320-rad1){
-//        velY * -1;
-//    }
-    
     
     // get force from pos
     float xPos = gl_FragCoord.x;
@@ -110,6 +97,36 @@ void main(void){
         field.z += unit_pz * strongness * 5.0;
     }
     
+    // add some colors
+    if((currCol.r >= 0.1) && (currCol.g >= 0.1) && (currCol.b >= 0.1)){
+        if(currCol.r < u_pixelR){
+            if(currCol.r < 1.0){
+                currCol.r += 0.1;
+            }
+        }else{
+            if(currCol.r > 0){
+                currCol.r -= 0.1;
+            }
+        }
+        if(currCol.g < u_pixelG){
+            if(currCol.g < 1.0){
+                currCol.g += 0.1;
+            }
+        }else{
+            if(currCol.g > 0){
+                currCol.g -= 0.1;
+            }
+        }
+        if(currCol.b < u_pixelB){
+            if(currCol.b < 1.0){
+                currCol.b += 0.1;
+            }
+        }else{
+            if(currCol.b > 0){
+                currCol.b -= 0.1;
+            }
+        }
+    }
     
     gl_FragData[0].rgba = vec4(currPos, posMapAlpha);
     gl_FragData[1].rgba = vec4(currCol, 1.0);

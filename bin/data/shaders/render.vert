@@ -49,7 +49,6 @@ void main() {
   
     gl_FrontColor = 0.0584 * sampleM + 0.0552 * (sampleB0 + sampleF0) + 0.0467 * (sampleB1 + sampleF1) + 0.0354 * (sampleB2 + sampleF2);
     
-    
     /*
     vec2 sz = vec2(0.0, 1.0) * 0.012;
     

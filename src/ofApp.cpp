@@ -215,11 +215,22 @@ void ofApp::update(){
     
     ofEnableAlphaBlending();
     renderFBO.begin();
-//    ofClear(0, 0, 0, 20);
-    ofSetColor(0, 0, 0, 20);
+    
+    ofSetColor(0, 0, 0, 10);
     ofFill();
     ofDrawRectangle(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
-    
+    /*
+    if(debugMode){
+        for (int i=0; i<numNodes; i++) {
+            if(i==0){
+                ofSetColor(255, 0, 0);
+            }else{
+                ofSetColor(0, 0, 255);
+            }
+            node[i].draw();
+        }
+    }
+    */
     render.begin();
     
     cam.lookAt(node[0]);
@@ -258,35 +269,41 @@ void ofApp::update(){
         }
     }else{
         oscSent0 = false;
-    }
-    if((int)time % 9 == 0){
+    }*/
+    if((int)time % 5 == 0){
         static int i, j;
         if(!oscSent1){
-            ofxOscMessage msg4, msg5, msg6, msg7;
-            msg4.setAddress("/pixel/R");
-            msg4.addFloatArg(pixels[j*width*4+i*4+0]);
-            sender.sendMessage(msg4, false);
-            msg5.setAddress("/pixel/G");
-            msg5.addFloatArg(pixels[j*width*4+i*4+1]);
-            sender.sendMessage(msg5, false);
-            msg6.setAddress("/pixel/B");
-            msg6.addFloatArg(pixels[j*width*4+i*4+2]);
-            sender.sendMessage(msg6, false);
-            msg7.setAddress("/pixel/T");
-            msg7.addFloatArg(pixels[j*width*4+i*4+3]);
-            sender.sendMessage(msg7, false);
+//            ofxOscMessage msg4, msg5, msg6, msg7;
+//            msg4.setAddress("/pixel/R");
+//            msg4.addFloatArg(pixels[j*width*4+i*4+0]);
+//            sender.sendMessage(msg4, false);
+//            msg5.setAddress("/pixel/G");
+//            msg5.addFloatArg(pixels[j*width*4+i*4+1]);
+//            sender.sendMessage(msg5, false);
+//            msg6.setAddress("/pixel/B");
+//            msg6.addFloatArg(pixels[j*width*4+i*4+2]);
+//            sender.sendMessage(msg6, false);
+//            msg7.setAddress("/pixel/T");
+//            msg7.addFloatArg(pixels[j*width*4+i*4+3]);
+//            sender.sendMessage(msg7, false);
             oscSent1 = true;
-        }
-        if(i<width-1){
-            i++;
-            j++;
-        }else{
-            i = j = 0;
+
+            updatePos.begin();
+            updatePos.setUniform1f("u_pixelR", currCol[j*width*4+i*4+0]);
+            updatePos.setUniform1f("u_pixelG", currCol[j*width*4+i*4+1]);
+            updatePos.setUniform1f("u_pixelB", currCol[j*width*4+i*4+2]);
+            updatePos.end();
+            
+            if(i<width-1){
+                i++;
+                j++;
+            }else{
+                i = j = 0;
+            }
         }
     }else{
         oscSent1 = false;
     }
-    */
 }
 
 //--------------------------------------------------------------
@@ -302,20 +319,7 @@ void ofApp::draw(){
     ofHideCursor();
     ofBackground(0);
     
-//    ofSetColor(205,155,155);
-
-/*    if(debugMode){
-        for (int i=0; i<numNodes; i++) {
-            if(i==0){
-                ofSetColor(255, 0, 0);
-            }else{
-                ofSetColor(0, 0, 255);
-            }
-            node[i].draw();
-        }
-    }
- */
-
+    ofSetColor(255,255,255);
     renderFBO.draw(0, 0);
     
     if(debugMode){
