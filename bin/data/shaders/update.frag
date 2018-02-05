@@ -10,7 +10,7 @@ uniform sampler2DRect u_nextPosTex;
 uniform sampler2DRect u_nextColTex;
 
 uniform vec2  u_resolution;
-uniform float  u_pixelR, u_pixelG, u_pixelB, u_pixelT;
+uniform float  u_pixelR, u_pixelG, u_pixelB;
 uniform float  u_time;
 uniform int   u_overdose;
 

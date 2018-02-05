@@ -5,7 +5,7 @@
 #define numNodes 2
 #define numImgs 5
 
-//#include "ofxOsc.h"
+#include "ofxOsc.h"
 #define HOST "localhost"
 #define PORT 1234
 
@@ -60,7 +60,7 @@ public:
     bool isMorphing;
     bool imgUpdated;
     
-//    ofxOscSender sender;
+    ofxOscSender sender;
     bool oscSent0, oscSent1;
     bool debugMode;
 };

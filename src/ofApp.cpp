@@ -141,7 +141,7 @@ void ofApp::setup(){
     
     setInitImage();
     
-//    sender.setup(HOST, PORT);
+    sender.setup(HOST, PORT);
 }
 
 //--------------------------------------------------------------
@@ -152,7 +152,7 @@ void ofApp::update(){
     if(((int)time % lifeTime == 0) && ((int)time != 0)){
         startCount = ofGetElapsedTimef();
     }
-
+    
     if((time - startCount <= morphingDuration) && ((int)time >= morphingDuration)){
         isMorphing = true;
     }else{
@@ -166,22 +166,22 @@ void ofApp::update(){
             imgID++;
             setNextImage();
             imgUpdated = true;
-//            pulse.setAddress("/overdose");
-//            pulse.addIntArg(1);
-//            sender.sendMessage(pulse, false);
+            //            pulse.setAddress("/overdose");
+            //            pulse.addIntArg(1);
+            //            sender.sendMessage(pulse, false);
         }
-
-//        if(pulseLength < 5){
-//            pulseLength ++;
-//        }else{
-//            pulse.setAddress("/overdose");
-//            pulse.addIntArg(0);
-//            sender.sendMessage(pulse, false);
-//        }
+        
+        //        if(pulseLength < 5){
+        //            pulseLength ++;
+        //        }else{
+        //            pulse.setAddress("/overdose");
+        //            pulse.addIntArg(0);
+        //            sender.sendMessage(pulse, false);
+        //        }
         overdose = 1;
     }else{
         imgUpdated = false;
-//        pulseLength = 0;
+        //        pulseLength = 0;
         overdose = 0;
     }
     
@@ -197,7 +197,7 @@ void ofApp::update(){
     pingPong.dst->begin();
     pingPong.dst->activateAllDrawBuffers();
     ofClear(0);
-
+    
     updatePos.begin();
     updatePos.setUniformTexture("u_currPosTex", pingPong.src->getTexture(0), 0);
     updatePos.setUniformTexture("u_currColTex", pingPong.src->getTexture(1), 1);
@@ -220,17 +220,17 @@ void ofApp::update(){
     ofFill();
     ofDrawRectangle(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
     /*
-    if(debugMode){
-        for (int i=0; i<numNodes; i++) {
-            if(i==0){
-                ofSetColor(255, 0, 0);
-            }else{
-                ofSetColor(0, 0, 255);
-            }
-            node[i].draw();
-        }
-    }
-    */
+     if(debugMode){
+     for (int i=0; i<numNodes; i++) {
+     if(i==0){
+     ofSetColor(255, 0, 0);
+     }else{
+     ofSetColor(0, 0, 255);
+     }
+     node[i].draw();
+     }
+     }
+     */
     render.begin();
     
     cam.lookAt(node[0]);
@@ -252,42 +252,41 @@ void ofApp::update(){
     ofPopStyle();
     
     /* osc
-    // ID of messages is correspondent to that of variables of MAX multislider
-    if((int)time % 7 == 0){
-        if(!oscSent0){
-            ofxOscMessage msg1, msg2, msg3;
-            msg1.setAddress("/nodePos/x");
-            msg1.addFloatArg(abs(node[1].getPosition().normalize().x));
-            sender.sendMessage(msg1, false);
-            msg2.setAddress("/nodePos/y");
-            msg2.addFloatArg(abs(node[1].getPosition().normalize().y));
-            sender.sendMessage(msg2, false);
-            msg3.setAddress("/nodePos/z");
-            msg3.addFloatArg(abs(node[1].getPosition().normalize().z));
-            sender.sendMessage(msg3, false);
-            oscSent0 = true;
-        }
-    }else{
-        oscSent0 = false;
-    }*/
-    if((int)time % 5 == 0){
+     // ID of messages is correspondent to that of variables of MAX multislider
+     if((int)time % 7 == 0){
+     if(!oscSent0){
+     ofxOscMessage msg1, msg2, msg3;
+     msg1.setAddress("/nodePos/x");
+     msg1.addFloatArg(abs(node[1].getPosition().normalize().x));
+     sender.sendMessage(msg1, false);
+     msg2.setAddress("/nodePos/y");
+     msg2.addFloatArg(abs(node[1].getPosition().normalize().y));
+     sender.sendMessage(msg2, false);
+     msg3.setAddress("/nodePos/z");
+     msg3.addFloatArg(abs(node[1].getPosition().normalize().z));
+     sender.sendMessage(msg3, false);
+     oscSent0 = true;
+     }
+     }else{
+     oscSent0 = false;
+     }*/
+    if((int)time % 10 == 0){
         static int i, j;
         if(!oscSent1){
-//            ofxOscMessage msg4, msg5, msg6, msg7;
-//            msg4.setAddress("/pixel/R");
-//            msg4.addFloatArg(pixels[j*width*4+i*4+0]);
-//            sender.sendMessage(msg4, false);
-//            msg5.setAddress("/pixel/G");
-//            msg5.addFloatArg(pixels[j*width*4+i*4+1]);
-//            sender.sendMessage(msg5, false);
-//            msg6.setAddress("/pixel/B");
-//            msg6.addFloatArg(pixels[j*width*4+i*4+2]);
-//            sender.sendMessage(msg6, false);
-//            msg7.setAddress("/pixel/T");
-//            msg7.addFloatArg(pixels[j*width*4+i*4+3]);
-//            sender.sendMessage(msg7, false);
+            
+            ofxOscMessage msg4, msg5, msg6, msg7;
+            msg4.setAddress("/pixel/R");
+            msg4.addFloatArg(pixels[j*width*4+i*4+0] * 0.0039);
+            sender.sendMessage(msg4, false);
+            msg5.setAddress("/pixel/G");
+            msg5.addFloatArg(pixels[j*width*4+i*4+1] * 0.0039);
+            sender.sendMessage(msg5, false);
+            msg6.setAddress("/pixel/B");
+            msg6.addFloatArg(pixels[j*width*4+i*4+2] * 0.0039);
+            sender.sendMessage(msg6, false);
+            
             oscSent1 = true;
-
+            
             updatePos.begin();
             updatePos.setUniform1f("u_pixelR", currCol[j*width*4+i*4+0]);
             updatePos.setUniform1f("u_pixelG", currCol[j*width*4+i*4+1]);
