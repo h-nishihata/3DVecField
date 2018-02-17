@@ -6,7 +6,6 @@ float* velocity;
 float* nextCol;
 float* nextPos;
 
-
 void ofApp::setInitImage(){
     img.load("specter_00.png");
     pixels = img.getPixels();
@@ -159,29 +158,21 @@ void ofApp::update(){
         isMorphing = false;
     }
     
-    // ofxOscMessage pulse;
-    // static int pulseLength;
+//    ofxOscMessage risingSound;
+//    static int risingSoundLength;
     if(isMorphing){
         if(!imgUpdated){
             imgID++;
             setNextImage();
             imgUpdated = true;
-            //            pulse.setAddress("/overdose");
-            //            pulse.addIntArg(1);
-            //            sender.sendMessage(pulse, false);
+//            risingSound.setAddress("/overdose");
+//            risingSound.addIntArg(1);
+//            sender.sendMessage(risingSound, false);
         }
-        
-        //        if(pulseLength < 5){
-        //            pulseLength ++;
-        //        }else{
-        //            pulse.setAddress("/overdose");
-        //            pulse.addIntArg(0);
-        //            sender.sendMessage(pulse, false);
-        //        }
         overdose = 1;
     }else{
         imgUpdated = false;
-        //        pulseLength = 0;
+//        risingSoundLength = 0;
         overdose = 0;
     }
     
@@ -251,41 +242,23 @@ void ofApp::update(){
     renderFBO.end();
     ofPopStyle();
     
-    /* osc
-     // ID of messages is correspondent to that of variables of MAX multislider
-     if((int)time % 7 == 0){
-     if(!oscSent0){
-     ofxOscMessage msg1, msg2, msg3;
-     msg1.setAddress("/nodePos/x");
-     msg1.addFloatArg(abs(node[1].getPosition().normalize().x));
-     sender.sendMessage(msg1, false);
-     msg2.setAddress("/nodePos/y");
-     msg2.addFloatArg(abs(node[1].getPosition().normalize().y));
-     sender.sendMessage(msg2, false);
-     msg3.setAddress("/nodePos/z");
-     msg3.addFloatArg(abs(node[1].getPosition().normalize().z));
-     sender.sendMessage(msg3, false);
-     oscSent0 = true;
-     }
-     }else{
-     oscSent0 = false;
-     }*/
+    // osc
     if((int)time % 10 == 0){
         static int i, j;
-        if(!oscSent1){
+        if(!oscSent){
             
             ofxOscMessage msg4, msg5, msg6, msg7;
             msg4.setAddress("/pixel/R");
-            msg4.addFloatArg(pixels[j*width*4+i*4+0] * 0.0039);
+            msg4.addFloatArg(pixels[j*width*4+i*4+0]);
             sender.sendMessage(msg4, false);
             msg5.setAddress("/pixel/G");
-            msg5.addFloatArg(pixels[j*width*4+i*4+1] * 0.0039);
+            msg5.addFloatArg(pixels[j*width*4+i*4+1]);
             sender.sendMessage(msg5, false);
             msg6.setAddress("/pixel/B");
-            msg6.addFloatArg(pixels[j*width*4+i*4+2] * 0.0039);
+            msg6.addFloatArg(pixels[j*width*4+i*4+2]);
             sender.sendMessage(msg6, false);
             
-            oscSent1 = true;
+            oscSent = true;
             
             updatePos.begin();
             updatePos.setUniform1f("u_pixelR", currCol[j*width*4+i*4+0]);
@@ -301,16 +274,8 @@ void ofApp::update(){
             }
         }
     }else{
-        oscSent1 = false;
+        oscSent = false;
     }
-}
-
-//--------------------------------------------------------------
-float ofApp::easeInOutQuad (float current, float init, float destination, float duration) {
-    if ((current/=duration/2) < 1){
-        return destination/2*current*current + init;
-    }
-    return -destination/2 * ((--current)*(current-2) - 1) + init;
 }
 
 //--------------------------------------------------------------

@@ -30,7 +30,6 @@ public:
     
     void setInitImage();
     void setNextImage();
-    float easeInOutQuad (float current, float init = 0, float destination = 100, float duration = 1);
     
     ofShader render, updatePos;
     pingPongBuffer pingPong;
@@ -61,6 +60,6 @@ public:
     bool imgUpdated;
     
     ofxOscSender sender;
-    bool oscSent0, oscSent1;
+    bool oscSent;
     bool debugMode;
 };
